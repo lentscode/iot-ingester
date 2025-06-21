@@ -1,0 +1,11 @@
+POST http://localhost:8001/raw-data
+Content-Type: application/json
+
+{
+  "device_id": "ciao",
+  "tag": "ciao"
+}
+
+---
+
+POST http://localhost:8001/raw-data
