@@ -12,6 +12,11 @@ services:
       KAFKA_CFG_NODE_ID: 0
       KAFKA_CFG_PROCESS_ROLES: controller,broker
       KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+    healthcheck:
+      test: kafka-topics.sh --list --bootstrap-server localhost:9092 || exit 1
+      interval: 1s
+      timeout: 5s
+      retries: 60
   ingester:
     build:
       context: .
@@ -24,3 +29,36 @@ services:
     command: ./bin/ingester
     ports:
       - "8001:8001"
+    depends_on:
+      broker:
+        condition: service_healthy
+      processor:
+        condition: service_started
+  processor:
+    build:
+      context: .
+      args:
+        APP_NAME: processor
+        MAIN_FILE: processor/processor.go
+    env_file: .env
+    networks:
+      - app-tier
+    command: ./bin/processor
+    depends_on:
+      processor-db:
+        condition: service_healthy
+  processor-db:
+    image: mysql
+    restart: unless-stopped
+    networks:
+      - app-tier
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: test
+    volumes:
+      - "./.data/processor:/var/lib/mysql"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 5s
+      interval: 1s
+      retries: 10

@@ -1,4 +1,4 @@
-package ingester
+package common
 
 type RawData struct {
 	DeviceID string  `json:"device_id"`
@@ -6,6 +6,6 @@ type RawData struct {
 	Value    float64 `json:"value"`
 }
 
-func (r *RawData) isValid() bool {
+func (r *RawData) IsValid() bool {
 	return r.DeviceID != "" && r.Tag != ""
 }

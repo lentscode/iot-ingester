@@ -16,14 +16,14 @@ func (i *Ingester) handleRawData(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	var data RawData
+	var data common.RawData
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		err = errors.Join(common.ErrReadingRequest, err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if !data.isValid() {
+	if !data.IsValid() {
 		http.Error(w, common.ErrRequestSchema.Error(), http.StatusBadRequest)
 		return
 	}

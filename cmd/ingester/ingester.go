@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 
 	"github.com/lentscode/iot-ingester/internal/services/ingester"
@@ -23,7 +23,7 @@ func main() {
 	if err != nil {
 		panic("can't start ingester")
 	}
-	fmt.Println("Starting server")
+	log.Println("Starting ingester")
 
 	ingester.Start()
 }
